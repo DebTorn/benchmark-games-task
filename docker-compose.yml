@@ -1,0 +1,45 @@
+
+services:
+  benchmark-app:
+    env_file: ".env"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: benchmark_app
+    platform: ${PLATFORM}
+    restart: unless-stopped
+    ports:
+      - 100:8000
+    volumes:
+      - ./:/app
+    depends_on:
+      - benchmark-database
+    networks:
+      - local-network
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+
+  benchmark-database:
+    image: mysql:8.0
+    container_name: benchmark_database
+    restart: unless-stopped
+    ports:
+      - 3320:3306
+    volumes:
+      - benchmark-dbdata-vol:/var/lib/mysql
+      - ./.docker/mysql/my.cnf:/etc/mysql/my.cnf
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD="yes"
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+    networks:
+      - local-network
+
+volumes:
+  benchmark-dbdata-vol:
+
+networks:
+  local-network:
