@@ -27,6 +27,13 @@ async def import_report(
     session: Session = Depends(get_session)
 ):
     try:
+        
+        if file.content_type != "application/json":
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid file format. Only JSON files are accepted."
+            )
+        
         content = await file.read()
         data = json.loads(content)
         
@@ -256,6 +263,10 @@ async def import_report(
             
         return {"success": "Report imported successfully"}
         
+        
+    except HTTPException as http_exc:
+        raise http_exc
+    
     except Exception as e:
         
         error_message = str(e)
