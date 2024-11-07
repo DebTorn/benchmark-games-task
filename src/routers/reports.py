@@ -139,7 +139,7 @@ async def import_report(
                 predictionReportData["order"] = int(kpi.get("order"))
             
             if prediction.get("value") is not None: 
-                decimal.Decimal(prediction.get("value"))
+                predictionReportData["value"] = decimal.Decimal(prediction.get("value"))
             
             predictionReportRepo = PredictionReportRepository(session)
             predictionReportRepo.create(predictionReportData)
