@@ -37,7 +37,7 @@ class Report(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     player_id: Mapped[int] = mapped_column(Integer, ForeignKey("players.id"))
     aggregator_id: Mapped[int] = mapped_column(Integer, ForeignKey("aggregators.id"))
-    value: Mapped[bool] = mapped_column(Boolean)
+    valid: Mapped[bool] = mapped_column(Boolean)
     error: Mapped[str] = mapped_column(Text, nullable=True)
     state: Mapped[str] = mapped_column(String(255))
     raw_report_url: Mapped[str] = mapped_column(Text)
@@ -74,7 +74,6 @@ class PredictionReport(Base):
     order: Mapped[int] = mapped_column(Integer, nullable=True)
     excluded: Mapped[bool] = mapped_column(Boolean)
     obsolate: Mapped[bool] = mapped_column(Boolean)
-    not_for_report: Mapped[bool] = mapped_column(Boolean)
     value: Mapped[decimal.Decimal] = mapped_column(DECIMAL(precision=5, scale=1), nullable=True)
     
     def to_response(self):
@@ -117,14 +116,14 @@ class ProfileMatchCalculatorConfigs(Base):
     __tablename__ = 'profile_match_calculator_configs'
     
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    config_identifier: Mapped[str] = mapped_column(String(255))
-    config_name: Mapped[str] = mapped_column(String(255))
+    identifier: Mapped[str] = mapped_column(String(255))
+    name: Mapped[str] = mapped_column(String(255))
 
 class ProfileMatchCalculatorFunction(Base):
     __tablename__ = 'profile_match_calculator_functions'
     
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    function_identifier: Mapped[str] = mapped_column(String(255))
+    identifier: Mapped[str] = mapped_column(String(255))
 
 class ProfileMatchCalculator(Base):
     __tablename__ = 'profile_match_calculators'
