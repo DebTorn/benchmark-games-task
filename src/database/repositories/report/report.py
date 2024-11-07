@@ -103,7 +103,7 @@ class ReportRepository():
         result = self.session.query(Report) \
                 .join(ProfileMatch, ProfileMatch.report_id == Report.id) \
                 .filter(ProfileMatch.calculator_id == calculator_id) \
-                .filter(Report.profile_match_value > value) \
+                .filter((ProfileMatch.value * decimal.Decimal(100)) > value) \
                 .limit(limit) \
                 .all()
         return result
