@@ -2,10 +2,11 @@ FROM python:3.12.6-slim
 
 ARG UID=1000
 ARG GID=1000
+ARG APP_TYPE=dev  # dev or prod
 
 ENV PYTHONDONTWRITEBYTECODE=1
-
 ENV PYTHONUNBUFFERED=1
+ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR /app
 
@@ -21,13 +22,21 @@ RUN apt-get update && \
         build-essential \
         default-libmysqlclient-dev \
         build-essential \
-        pkg-config
+        pipx \
+        pkg-config \
+        curl && \
+    apt-get clean
 
-COPY requirements.txt .
+RUN pip install --upgrade pip && \
+    pip install pipx && \
+    python3 -m pipx ensurepath
 
-RUN --mount=type=cache,target=/root/.cache/pip \
-    python -m pip install --upgrade pip && \
-    python -m pip install -r requirements.txt
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+
+COPY --chown=www-data:www-data ./poetry.lock ./pyproject.toml /app/
+
+RUN poetry install $(test "$APP_TYPE" = prod && echo "--only=main") --no-interaction --no-ansi
 
 COPY --chown=www-data:www-data . .
 
